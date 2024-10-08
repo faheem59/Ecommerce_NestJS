@@ -5,11 +5,13 @@ import {
   Entity,
   ManyToMany,
   JoinTable,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Rating } from './rating.entity';
 import { Comment } from './comment.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Product {
@@ -40,4 +42,8 @@ export class Product {
 
   @OneToMany(() => Comment, (comment) => comment.product)
   comments: Comment[];
+
+  @Exclude()
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

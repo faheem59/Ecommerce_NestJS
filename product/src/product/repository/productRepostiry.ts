@@ -5,12 +5,11 @@ import {
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Rating } from '../entities/rating.entity';
-import { Comment } from '../entities/comment.entity';
 import { Product } from '../entities/product.entity';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { CloudinaryService } from 'src/config/cloudinary/cloudinary.service';
 import { CategoryRepository } from './categoryRepository';
+import { UpdateProductDto } from '../dto/update-product.dto';
 
 @Injectable()
 export class ProductRepository {
@@ -18,10 +17,6 @@ export class ProductRepository {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly categoryRepository: CategoryRepository,
-    @InjectRepository(Rating)
-    private readonly ratingRepository: Repository<Rating>,
-    @InjectRepository(Comment)
-    private readonly commentRepository: Repository<Comment>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
@@ -58,5 +53,48 @@ export class ProductRepository {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async findAllProduct(): Promise<Product[]> {
+    return await this.productRepository.find();
+  }
+
+  async findProductById(id: string): Promise<Product> {
+    try {
+      const product = await this.productRepository.findOne({
+        where: { id },
+      });
+      if (!product) {
+        throw new NotFoundException('Not Found');
+      }
+
+      return product;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  async update(id: string, updateData: UpdateProductDto): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
+    await this.productRepository.update(id, updateData);
+
+    return this.productRepository.findOne({ where: { id } });
+  }
+
+  async deleteProduct(id: string): Promise<string> {
+    const product = await this.productRepository.findOne({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product Not Found');
+    }
+    await this.productRepository.softDelete(id);
+
+    return 'Product deleted succeddfully';
   }
 }

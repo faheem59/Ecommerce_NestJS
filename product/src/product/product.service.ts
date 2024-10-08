@@ -5,6 +5,7 @@ import { ProductRepository } from './repository/productRepostiry';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/category-dto';
 import { CategoryRepository } from './repository/categoryRepository';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -23,16 +24,24 @@ export class ProductService {
   async getCategory(): Promise<Category[]> {
     return await this.categoryRepository.getCategory();
   }
-  findAll() {
-    return `This action returns all product`;
+  async findAllProduct() {
+    return await this.productRepositroy.findAllProduct();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string): Promise<Product> {
+    const product = await this.productRepositroy.findProductById(id);
+    return product;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async updateProduct(
+    id: string,
+    updatedata: UpdateProductDto,
+  ): Promise<Product> {
+    return await this.productRepositroy.update(id, updatedata);
+  }
+
+  async deleteProduct(id: string) {
+    return await this.productRepositroy.deleteProduct(id);
   }
 
   async createCategory(categoryData: CreateCategoryDto): Promise<Category> {
