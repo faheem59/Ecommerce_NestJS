@@ -1,0 +1,26 @@
+export declare const ERROR_MESSAGES: {
+    USER_ALREADY_EXISTS: string;
+    INVALID_CREDENTIALS: string;
+    ERROR_CREATING_USER: string;
+    ERROR_VALIDATING_USER: string;
+    ERROR_RETRIEVING_USERS: string;
+    USER_NOT_FOUND: string;
+    ERROR_UPDATING_USER: string;
+    PASSWORD_UPDATE_NOT_ALLOWED: string;
+    ERROR_REMOVING_USER: string;
+    USER_NOT_FOUNDED: string;
+    UNEXPECTED_ERROR: string;
+    UNAUTHORIZED: string;
+    TOKEN_NOT_FOUND: string;
+    INVALID_TOKEN: string;
+    ADMIN_ALREADY_EXISTS: string;
+    USER_INACTIVE: string;
+    INVALID_REFRESH_TOKEN_OR_EXPIRES: string;
+    INVALID_PERMISSION: string;
+    ROLE_NOT_FOUND: string;
+    USER_STATUS_NOT_CHANGED: string;
+    EMAIL_EXITS: string;
+    FAILED_TO_SEND_EMAIL: string;
+    FAILED_TO_SEND_RESET_MAIL: string;
+    ACCESS_DENIED: string;
+};

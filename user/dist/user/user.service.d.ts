@@ -1,0 +1,36 @@
+import { UserRepository } from "./repositories/user-repository";
+import { User } from "./entities/user.entity";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateUserResponse, DeleteUserResponse, FindAllUsersResponse, FindSingleUsersResponse, LoginUserResponse, ResetPasswordResponse, UpdateUserResponse, VerifyEmailResponse } from "../utils/success-response";
+import { UserStatus } from "../enum/permission-enum";
+import { PermissionRepository } from "./repositories/permssion-repository";
+import { ClientService } from "../redisClient/client.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { RefreshTokenRepository } from "./repositories/refreshToken-repository";
+import { RefreshToken } from "./entities/refreshToken.entity";
+export declare class UserService {
+    private readonly userRepository;
+    private readonly permissionRepository;
+    private readonly reddisClient;
+    private readonly refreshTokenRepository;
+    private readonly saltRounds;
+    constructor(userRepository: UserRepository, permissionRepository: PermissionRepository, reddisClient: ClientService, refreshTokenRepository: RefreshTokenRepository);
+    create(userData: CreateUserDto): Promise<CreateUserResponse>;
+    createAdmin(adminData: CreateUserDto): Promise<CreateUserResponse>;
+    findOneEmail(email: string): Promise<LoginUserResponse>;
+    findAll(): Promise<FindAllUsersResponse>;
+    findInstructor(): Promise<FindAllUsersResponse>;
+    findById(id: number): Promise<FindSingleUsersResponse>;
+    update(id: number, updateUserData: UpdateUserDto): Promise<UpdateUserResponse>;
+    changeUserStatus(userId: number, status: UserStatus, adminId: number): Promise<void>;
+    remove(id: number): Promise<DeleteUserResponse>;
+    generatePasswordResetToken(email: string): Promise<string>;
+    resetPassword(token: string, newPassword: string): Promise<ResetPasswordResponse>;
+    addPermissionsToUser(userId: number, permissionNames: string[]): Promise<User>;
+    removePermissionsFromUser(userId: number, permissionNames: string[]): Promise<User>;
+    getUserPermissions(userId: number): Promise<any>;
+    verfiyMail(email: string): Promise<VerifyEmailResponse>;
+    saveUpdateToken(userId: number, token: string): Promise<void>;
+    findToken(token: string): Promise<RefreshToken>;
+    findTokenById(userId: number): Promise<RefreshToken | null>;
+}

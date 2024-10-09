@@ -1,0 +1,30 @@
+import { Repository } from "typeorm";
+import { CreateUserDto } from "../dto/create-user.dto";
+import { UpdateUserDto } from "../dto/update-user.dto";
+import { User } from "../entities/user.entity";
+import { RoleEntity } from "../entities/role.entity";
+import { UserStatus } from "../../enum/permission-enum";
+import { MailService } from "../../mail/mail.service";
+import { ResetPasswordResponse, VerifyEmailResponse } from "../../utils/success-response";
+export declare class UserRepository {
+    private readonly repository;
+    private readonly roleRepository;
+    private readonly mailService;
+    private readonly saltRounds;
+    constructor(repository: Repository<User>, roleRepository: Repository<RoleEntity>, mailService: MailService);
+    creatUser(userData: CreateUserDto): Promise<User>;
+    createAdmin(adminData: CreateUserDto): Promise<User>;
+    findOneByEmail(email: string): Promise<User>;
+    findOneByEmailDeleted(email: string): Promise<User | null>;
+    findAll(): Promise<User[]>;
+    findAllInstructor(): Promise<User[]>;
+    findById(id: number): Promise<User>;
+    updateOne(id: number, updateUserData: UpdateUserDto): Promise<User>;
+    destroy(id: number): Promise<void>;
+    saveResetToken(email: string, token: string): Promise<void>;
+    findUserByToken(token: string): Promise<User | null>;
+    resetPassword(token: string, newPassword: string): Promise<ResetPasswordResponse>;
+    isAdmin(userId: number): Promise<boolean>;
+    updateUserStatus(userId: number, status: UserStatus, adminId: number): Promise<void>;
+    verfiyMail(email: string): Promise<VerifyEmailResponse>;
+}
