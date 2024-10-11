@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../entities/category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from '../dto/category-dto';
+import { ERROR_MESSAGES } from '../utils/constants/Error.message';
+import { Common } from '../utils/constants/commom.constant';
 
 @Injectable()
 export class CategoryRepository {
@@ -20,9 +22,7 @@ export class CategoryRepository {
       });
 
       if (!parentCategory) {
-        throw new NotFoundException(
-          `Parent category with ID ${categoryData.parentCategoryId} not found`,
-        );
+        throw new NotFoundException(ERROR_MESSAGES.CATEGORY_NOT_FOUND);
       }
       category.parentCategory = parentCategory;
     }
@@ -31,8 +31,11 @@ export class CategoryRepository {
   }
 
   async findAllWithSubcategories(): Promise<Category[]> {
-    return await this.categoryRepository.find({ relations: ['subcategories'] });
+    return await this.categoryRepository.find({
+      relations: [Common.SUBCATEGORIES],
+    });
   }
+
   async getCategory(): Promise<Category[]> {
     return await this.categoryRepository.find();
   }
@@ -41,7 +44,7 @@ export class CategoryRepository {
     const categories = await this.categoryRepository.findByIds(categoryIds);
 
     if (!categories || categories.length === 0) {
-      throw new NotFoundException('Categories not found');
+      throw new NotFoundException(ERROR_MESSAGES.CATEGORY_NOT_FOUND);
     }
 
     return categories;
@@ -51,7 +54,9 @@ export class CategoryRepository {
     const category = await this.categoryRepository.findOne({ where: { id } });
 
     if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      throw new NotFoundException(
+        ERROR_MESSAGES.CATEGORY_WITH_ID_NOT_FOUND(id),
+      );
     }
 
     return category;

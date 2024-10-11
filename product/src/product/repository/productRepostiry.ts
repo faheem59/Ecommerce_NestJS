@@ -10,6 +10,7 @@ import { CreateProductDto } from '../dto/create-product.dto';
 import { CloudinaryService } from 'src/config/cloudinary/cloudinary.service';
 import { CategoryRepository } from './categoryRepository';
 import { UpdateProductDto } from '../dto/update-product.dto';
+import { ERROR_MESSAGES } from '../utils/constants/Error.message';
 
 @Injectable()
 export class ProductRepository {
@@ -27,7 +28,7 @@ export class ProductRepository {
     try {
       const publicId = productData.poster?.public_id || `course_${Date.now()}`;
       if (!file) {
-        throw new NotFoundException('File Not Found');
+        throw new NotFoundException(ERROR_MESSAGES.FILE_NOT_FOUND);
       }
 
       const uploadResult = await this.cloudinaryService.uploadImage(
@@ -65,7 +66,7 @@ export class ProductRepository {
         where: { id },
       });
       if (!product) {
-        throw new NotFoundException('Not Found');
+        throw new NotFoundException(ERROR_MESSAGES.PRODUCT_NOT_FOUND);
       }
 
       return product;
@@ -77,7 +78,7 @@ export class ProductRepository {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
-      throw new NotFoundException(`Product with ID ${id} not found`);
+      throw new NotFoundException(ERROR_MESSAGES.PRODUCT_WITH_ID_NOT_FOUND);
     }
 
     await this.productRepository.update(id, updateData);
@@ -91,11 +92,11 @@ export class ProductRepository {
     });
 
     if (!product) {
-      throw new NotFoundException('Product Not Found');
+      throw new NotFoundException(ERROR_MESSAGES.PRODUCT_WITH_ID_NOT_FOUND);
     }
     await this.productRepository.softDelete(id);
 
-    return 'Product deleted succeddfully';
+    return ERROR_MESSAGES.PRODUCT_DELETED;
   }
 
   async updateProductQuantity(data: { productId: string; quantity: number }) {
