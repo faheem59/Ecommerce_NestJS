@@ -61,7 +61,6 @@ export class ProductRepository {
 
   async findProductById(id: string): Promise<Product> {
     try {
-      console.log(id, 'id');
       const product = await this.productRepository.findOne({
         where: { id },
       });
