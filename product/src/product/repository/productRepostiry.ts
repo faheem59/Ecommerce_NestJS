@@ -61,6 +61,7 @@ export class ProductRepository {
 
   async findProductById(id: string): Promise<Product> {
     try {
+      console.log(id, 'id');
       const product = await this.productRepository.findOne({
         where: { id },
       });
@@ -96,5 +97,16 @@ export class ProductRepository {
     await this.productRepository.softDelete(id);
 
     return 'Product deleted succeddfully';
+  }
+
+  async updateProductQuantity(data: { productId: string; quantity: number }) {
+    const product = await this.productRepository.findOne({
+      where: { id: data.productId },
+    });
+
+    if (product) {
+      product.quantity = data.quantity;
+      await this.productRepository.save(product);
+    }
   }
 }

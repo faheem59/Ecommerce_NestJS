@@ -15,10 +15,22 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateCategoryDto } from './dto/category-dto';
 import { Category } from './entities/category.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+
+  @MessagePattern('get_product')
+  async getProduct(productId: string) {
+    const id = await this.productService.findOne(productId);
+    return id;
+  }
+
+  @MessagePattern('update_product_quantity')
+  async updateProductQuantity(data: { productId: string; quantity: number }) {
+    return await this.productService.updateProductQuantity(data);
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))

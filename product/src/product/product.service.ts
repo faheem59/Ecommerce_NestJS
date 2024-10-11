@@ -6,19 +6,25 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/category-dto';
 import { CategoryRepository } from './repository/categoryRepository';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { RabbitmqService } from 'src/config/rabbitmq/rabbitmq.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly productRepositroy: ProductRepository,
     private readonly categoryRepository: CategoryRepository,
+    private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async create(
     productData: CreateProductDto,
     file: Express.Multer.File,
   ): Promise<Product> {
-    return await this.productRepositroy.createProduct(productData, file);
+    const product = await this.productRepositroy.createProduct(
+      productData,
+      file,
+    );
+    return product;
   }
 
   async getCategory(): Promise<Category[]> {
@@ -50,5 +56,9 @@ export class ProductService {
 
   async findAllWithSubcategories(): Promise<Category[]> {
     return await this.categoryRepository.findAllWithSubcategories();
+  }
+
+  async updateProductQuantity(data: { productId: string; quantity: number }) {
+    return await this.productRepositroy.updateProductQuantity(data);
   }
 }

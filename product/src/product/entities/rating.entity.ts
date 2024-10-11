@@ -12,6 +12,12 @@ export class Rating {
   @Column({ type: 'numeric' })
   avgRating: number;
 
+  @Column('jsonb')
+  user: {
+    id: string;
+    name: string;
+  };
+
   @ManyToOne(() => Product, (product) => product.rating)
   products: Product[];
 }

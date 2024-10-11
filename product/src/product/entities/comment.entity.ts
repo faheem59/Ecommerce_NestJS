@@ -9,6 +9,12 @@ export class Comment {
   @Column({ type: 'text' })
   content: string;
 
+  @Column('jsonb')
+  user: {
+    id: string;
+    name: string;
+  };
+
   @ManyToOne(() => Product, (product) => product.comments)
   product: Product;
 }
