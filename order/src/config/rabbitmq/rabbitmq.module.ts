@@ -17,11 +17,11 @@ import { RabbitmqService } from './rabbitmq.service';
         },
       },
       {
-        name: 'ORDER_RABBITMQ_CLIENT',
+        name: 'PAYMENT_RABBITMQ_CLIENT',
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://localhost:5672'],
-          queue: 'order_queue',
+          queue: 'payment.create-payment-intent',
           queueOptions: {
             durable: true,
           },

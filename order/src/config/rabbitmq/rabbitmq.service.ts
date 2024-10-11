@@ -4,15 +4,17 @@ import { ClientProxy } from '@nestjs/microservices';
 @Injectable()
 export class RabbitmqService {
   constructor(
+    @Inject('PAYMENT_RABBITMQ_CLIENT')
+    private readonly paymentClient: ClientProxy,
     @Inject('PRODUCT_RABBITMQ_CLIENT')
-    private readonly rabbimqClient: ClientProxy,
+    private readonly productClient: ClientProxy,
   ) {}
 
   async sendMessage(pattern: string, data: any) {
-    return this.rabbimqClient.emit(pattern, data);
+    return this.paymentClient.send(pattern, data);
   }
 
   async sendProduct(pattern: string, data: any) {
-    return this.rabbimqClient.send(pattern, data);
+    return this.productClient.send(pattern, data);
   }
 }

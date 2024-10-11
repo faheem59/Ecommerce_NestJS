@@ -51,6 +51,9 @@ export class Order {
   shippingPrice: number;
 
   @Column()
+  paymentMethod: 'stripe' | 'cod';
+
+  @Column()
   totalPrice: number;
 
   @Column({ default: 'Processing' })

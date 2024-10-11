@@ -80,6 +80,9 @@ export class CreateOrderDto {
   @IsNumber()
   shippingPrice: number;
 
+  @IsString()
+  paymentMethod: 'stripe' | 'cod';
+
   @IsNotEmpty()
   @IsNumber()
   totalPrice: number;

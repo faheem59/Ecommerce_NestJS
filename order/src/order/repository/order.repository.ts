@@ -10,6 +10,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { OrderItem } from '../entities/orderItem.entity';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { RedisClientService } from 'src/config/redisClient/redis.service';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class OrderRepository {
@@ -20,19 +21,23 @@ export class OrderRepository {
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
     private readonly redisClient: RedisClientService,
+    private readonly httpService: HttpService,
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto) {
     const orderItems: OrderItem[] = [];
     const userData = await this.redisClient.getValue('user');
     console.log('user', userData);
+
     if (!userData) {
       throw new NotFoundException('User data not found in Redis');
     }
+
     for (const item of createOrderDto.orderItems) {
       const productData = await (
         await this.rabbitmqService.sendProduct('get_product', item.productId)
       ).toPromise();
+      console.log('Product data:', productData);
       if (productData) {
         const orderItem = new OrderItem();
         orderItem.name = productData.name;
@@ -43,6 +48,39 @@ export class OrderRepository {
         orderItems.push(orderItem);
       }
     }
+
+    // Handle payment information
+    let paymentInfo;
+    if (createOrderDto.paymentMethod === 'stripe') {
+      try {
+        const paymentResponse = await (
+          await this.rabbitmqService.sendMessage(
+            'payment.create-payment-intent',
+            {
+              amount: createOrderDto.totalPrice,
+            },
+          )
+        ).toPromise();
+        const { id: paymentIntentId, status } = paymentResponse;
+        paymentInfo = {
+          id: paymentIntentId,
+          status: status || 'Payment Pending',
+        };
+      } catch (error) {
+        console.error('Error sending payment request:', error);
+        throw new InternalServerErrorException(
+          'Failed to create payment intent',
+        );
+      }
+    } else if (createOrderDto.paymentMethod === 'cod') {
+      paymentInfo = {
+        id: null,
+        status: 'Cash on Delivery',
+      };
+    } else {
+      throw new InternalServerErrorException('Invalid payment method');
+    }
+
     const order = this.orderRepository.create({
       ...createOrderDto,
       orderItems,
@@ -50,9 +88,11 @@ export class OrderRepository {
         id: userData.id,
         name: userData.name,
       },
+      paymentInfo,
     });
 
     await this.orderRepository.save(order);
+    return order;
   }
 
   async findAllOrder(): Promise<Order[]> {

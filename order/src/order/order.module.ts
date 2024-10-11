@@ -7,10 +7,14 @@ import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/orderItem.entity';
 import { OrderRepository } from './repository/order.repository';
 import { RedisClientService } from 'src/config/redisClient/redis.service';
-// import { RabbitmqService } from 'src/config/rabbitmq/rabbitmq.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem]), RabbitmqModule],
+  imports: [
+    TypeOrmModule.forFeature([Order, OrderItem]),
+    RabbitmqModule,
+    HttpModule,
+  ],
   controllers: [OrderController],
   providers: [OrderService, OrderRepository, RedisClientService],
 })
